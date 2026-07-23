@@ -10,11 +10,13 @@ export default function useDeviceConfig() {
 		height: number;
 	};
 	if (device === MOBILE_LIST.AUTO) {
-		const calculatedWidth = size ? size.width - 30 : 0;
-		const calculatedHeight = size ? size.height - 140 : 0;
+		// 自动模式跟随中间预览区域变化。顶部需要为模式切换浮层预留空间，
+		// 预览屏幕靠下放置，因此无需在底部重复保留同样高度的空白。
+		const horizontalGutter = 30;
+		const verticalGutter = 72;
 		screenSize = {
-			width: calculatedWidth > 430 ? 430 : calculatedWidth,
-			height: calculatedHeight > 932 ? 932 : calculatedHeight,
+			width: Math.max(0, (size?.width ?? 0) - horizontalGutter),
+			height: Math.max(0, (size?.height ?? 0) - verticalGutter),
 		};
 	} else {
 		screenSize = SCREEN_SIZE[device];
