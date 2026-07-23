@@ -1,18 +1,26 @@
+import { MYSELF_ID } from "@/faker/user";
 import {
 	ConversationTypeLabel,
 	EConversationType,
 	type TConversationItem,
 	conversationListAtom,
 } from "@/stateV2/conversation";
-import type { IStateProfile } from "@/stateV2/profile";
+import { groupAtom } from "@/stateV2/group";
+import { type IStateProfile, profileAtom } from "@/stateV2/profile";
 import { Global, css } from "@emotion/react";
 import { useUpdateEffect } from "ahooks";
 import { Button, Form, Input, InputNumber, Radio, Select, Switch } from "antd";
 import dayjs from "dayjs";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
+import LocalFileUpload from "../LocalFileUpload";
 import LocalImageUploadWithPreview from "../LocalImageUpload";
 import WrapSlateInput from "../SlateInput";
 import { CONVERSATION_TYPE_OPTIONS } from "./consts";
+
+const MemberOption = ({ id }: { id: string }) => {
+	const profile = useAtomValue(profileAtom(id));
+	return <>{profile ? (profile.remark ?? profile.nickname) : id}</>;
+};
 
 const ConversationItemMetaDataEditor = ({
 	data,
@@ -20,8 +28,17 @@ const ConversationItemMetaDataEditor = ({
 }: EditorProps<TConversationItem, [IStateProfile["id"], TConversationItem["id"]]>) => {
 	const [form] = Form.useForm<TConversationItem>();
 	const [conversationList, setConversationList] = useAtom(conversationListAtom(index[0]));
+	const group = useAtomValue(groupAtom(index[0]));
+	const isGroupChat = !!group;
 
 	const onFinish = (values: TConversationItem) => {
+		if (isGroupChat) {
+			values.senderId ??= MYSELF_ID;
+			values.role = values.senderId === MYSELF_ID ? "mine" : "friend";
+		}
+		if (values.type === EConversationType.transfer) {
+			values.originalSender = values.role;
+		}
 		setConversationList((prev) =>
 			prev.map((item) => (item.id === data.id ? { ...item, ...values } : item)),
 		);
@@ -56,12 +73,24 @@ const ConversationItemMetaDataEditor = ({
 			<Form.Item<TConversationItem> name="type" label="消息类型">
 				<Radio.Group options={CONVERSATION_TYPE_OPTIONS} disabled />
 			</Form.Item>
-			<Form.Item<TConversationItem> name="role" label="消息由谁发送">
-				<Radio.Group>
-					<Radio value="mine">我自己</Radio>
-					<Radio value="friend">朋友</Radio>
-				</Radio.Group>
-			</Form.Item>
+			{isGroupChat ? (
+				<Form.Item<TConversationItem> name="senderId" label="消息由谁发送">
+					<Select>
+						{group.memberIds.map((id) => (
+							<Select.Option key={id} value={id}>
+								<MemberOption id={id} />
+							</Select.Option>
+						))}
+					</Select>
+				</Form.Item>
+			) : (
+				<Form.Item<TConversationItem> name="role" label="消息由谁发送">
+					<Radio.Group>
+						<Radio value="mine">我自己</Radio>
+						<Radio value="friend">朋友</Radio>
+					</Radio.Group>
+				</Form.Item>
+			)}
 			<Form.Item<TConversationItem> name="upperText" label="上方文字">
 				<Input
 					suffix={
@@ -90,8 +119,7 @@ const ConversationItemMetaDataEditor = ({
 										options={conversationList
 											.filter(
 												(v) =>
-													[EConversationType.text, EConversationType.image].includes(v.type) &&
-													v.id !== data.id,
+													v.type !== EConversationType.redPacketAcceptedReply && v.id !== data.id,
 											)
 											.map((v) => ({
 												label: `消息（${ConversationTypeLabel[v.type]}${
@@ -165,17 +193,6 @@ const ConversationItemMetaDataEditor = ({
 					if (type === EConversationType.transfer) {
 						return (
 							<>
-								<Form.Item<TConversationItem>
-									name="originalSender"
-									label="转账发起人"
-									required
-									rules={[{ required: true }]}
-								>
-									<Radio.Group>
-										<Radio value="mine">我自己</Radio>
-										<Radio value="friend">朋友</Radio>
-									</Radio.Group>
-								</Form.Item>
 								<Form.Item<TConversationItem>
 									name="amount"
 									label="转账金额"
@@ -263,6 +280,18 @@ const ConversationItemMetaDataEditor = ({
 									</Radio.Group>
 								</Form.Item>
 							</>
+						);
+					}
+					if (type === EConversationType.file) {
+						return (
+							<Form.Item<TConversationItem>
+								name="fileData"
+								label="文件"
+								required
+								rules={[{ required: true }]}
+							>
+								<LocalFileUpload />
+							</Form.Item>
 						);
 					}
 					if (type === EConversationType.personalCard) {

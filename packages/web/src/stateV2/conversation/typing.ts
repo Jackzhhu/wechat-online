@@ -10,6 +10,7 @@ export enum EConversationType {
 	redPacket = "redPacket",
 	redPacketAcceptedReply = "redPacketAcceptedReply",
 	personalCard = "personalCard",
+	file = "file",
 }
 
 export type TConversationRole = "mine" | "friend";
@@ -82,6 +83,17 @@ export interface IConversationTypePersonalCard extends IConversationItemBase {
 	nickname: string;
 }
 
+export interface IConversationTypeFile extends IConversationItemBase {
+	type: EConversationType.file;
+	fileData: {
+		/** IndexedDB 中保存的文件哈希 */
+		fileInfo: string;
+		fileName: string;
+		fileSize: number;
+		mimeType?: string;
+	};
+}
+
 export type TConversationItem =
 	| IConversationTypeText
 	| IConversationTypeSingleUpperText
@@ -91,4 +103,5 @@ export type TConversationItem =
 	| IConversationTypeVoice
 	| IConversationTypeRedPacket
 	| IConversationTypeRedPacketAcceptedReply
-	| IConversationTypePersonalCard;
+	| IConversationTypePersonalCard
+	| IConversationTypeFile;

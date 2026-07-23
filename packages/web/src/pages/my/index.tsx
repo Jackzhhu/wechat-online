@@ -28,7 +28,7 @@ const My = () => {
 	return (
 		<>
 			<canBeDetected.div
-				className="flex cursor-pointer flex-col pt-12 pr-3 pb-6 pl-9"
+				className="flex cursor-pointer flex-col pt-8 pr-3 pb-6 pl-9"
 				onClick={() => {
 					navigate("/my/profile-edit");
 				}}

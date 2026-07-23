@@ -138,7 +138,7 @@ const ConversationList = () => {
 					return (
 						<canBeDetected.div
 							className={twJoin(
-								"group flex flex-col space-y-4",
+								"group flex flex-col",
 								item.role,
 								isEdit && "cursor-grab",
 							)}

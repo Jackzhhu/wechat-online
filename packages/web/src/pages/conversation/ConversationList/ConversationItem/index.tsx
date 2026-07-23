@@ -3,6 +3,7 @@ import { EConversationType, type TConversationItem } from "@/stateV2/conversatio
 import { memo } from "react";
 import { useParams } from "react-router-dom";
 import CenterText from "./CenterText";
+import File from "./File";
 import Image from "./Image";
 import PersonalCard from "./PersonalCard";
 import RedPacket from "./RedPacket";
@@ -102,6 +103,8 @@ const ConversationItem = ({ data }: Props) => {
 					upperText={upperText}
 				/>
 			);
+		case EConversationType.file:
+			return <File fileData={data.fileData} senderId={senderId} upperText={upperText} />;
 		default:
 			return null;
 	}

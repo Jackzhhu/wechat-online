@@ -20,6 +20,7 @@ interface Props<P = AnyObject> {
 	blockStyle?: CSSProperties;
 	extraElement?: ReactNode;
 	hideAvatar?: boolean;
+	hideSenderName?: boolean;
 	innerBlockProps?: P;
 	onClick?: MouseEventHandler<HTMLDivElement>;
 }
@@ -33,6 +34,7 @@ const CommonBlock = <P extends AnyObject>({
 	blockStyle,
 	extraElement,
 	hideAvatar,
+	hideSenderName,
 	innerBlockProps,
 	onClick,
 }: PropsWithChildren<Props<P>>) => {
@@ -61,14 +63,9 @@ const CommonBlock = <P extends AnyObject>({
 		<>
 			{upperText && <div className="m-auto text-black/50 text-xs">{upperText}</div>}
 			<div className="flex flex-col group-[.mine]:items-end group-[.friend]:items-start">
-				{isGroupChat && senderId !== MYSELF_ID && (
-					<div className="mb-1 ml-[52px] text-gray-400 text-xs group-[.mine]:mr-[52px] group-[.mine]:ml-0">
-						{remark ?? nickname}
-					</div>
-				)}
 				<div
 					className={twMerge(
-						"relative flex max-w-[85%] space-x-3 group-[.mine]:ml-auto group-[.mine]:flex-row-reverse group-[.mine]:space-x-reverse",
+						"relative flex max-w-[85%] items-start space-x-3 group-[.mine]:ml-auto group-[.mine]:flex-row-reverse group-[.mine]:space-x-reverse",
 						blockClassName,
 					)}
 					style={blockStyle}
@@ -82,20 +79,25 @@ const CommonBlock = <P extends AnyObject>({
 						)}
 						onClick={debouncedHandleClick}
 					/>
-					<canBeDetected.div
-						css={css`
+					<div className="min-w-0">
+						{isGroupChat && senderId !== MYSELF_ID && !hideSenderName && (
+							<div className="mb-1 text-gray-400 text-xs">{remark ?? nickname}</div>
+						)}
+						<canBeDetected.div
+							css={css`
             &::before {
               clip-path: polygon(0% 50%, 50% 100%, 0% 100%);
             }
           `}
-						className={twMerge(
-							"group-[.friend]:before:-left-[1px] group-[.mine]:before:-right-[1px] group-[.mine]:before:-rotate-[135deg] relative max-w-[85%] break-words rounded p-[10px] before:absolute before:top-[6px] before:h-7 before:w-7 before:rounded-sm group-[.friend]:before:rotate-45",
-							innerBlockClassName,
-						)}
-						{...(innerBlockProps as P)}
-					>
-						{children}
-					</canBeDetected.div>
+							className={twMerge(
+								"group-[.friend]:before:-left-[1px] group-[.mine]:before:-right-[1px] group-[.mine]:before:-rotate-[135deg] relative max-w-full break-words rounded p-[10px] before:absolute before:top-[6px] before:h-7 before:w-7 before:rounded-sm group-[.friend]:before:rotate-45",
+								innerBlockClassName,
+							)}
+							{...(innerBlockProps as P)}
+						>
+							{children}
+						</canBeDetected.div>
+					</div>
 					{extraElement}
 				</div>
 			</div>

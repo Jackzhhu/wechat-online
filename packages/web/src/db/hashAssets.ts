@@ -1,18 +1,24 @@
 import Dexie, { type Table } from "dexie";
 import { isUndefined } from "lodash-es";
 
-interface DBImage {
+interface DBAsset {
 	id: string;
 	file: File;
 }
 export const HASH_ASSETS_DB_NAME = "HashAssetsDB";
 
 export const hashAssetsDB = new Dexie(HASH_ASSETS_DB_NAME) as Dexie & {
-	images: Table<DBImage, "id">;
+	images: Table<DBAsset, string>;
+	files: Table<DBAsset, string>;
 };
 
 hashAssetsDB.version(1).stores({
 	images: "&id",
+});
+
+hashAssetsDB.version(2).stores({
+	images: "&id",
+	files: "&id",
 });
 
 hashAssetsDB.use({
@@ -24,13 +30,13 @@ hashAssetsDB.use({
 			table(name) {
 				const downlevelTable = downlevelDatabase.table(name);
 
-				if (name === "images") {
+				if (name === "images" || name === "files") {
 					return {
 						...downlevelTable,
 						mutate: (req) => {
 							if (req.type === "put") {
 								const { values } = req;
-								const data = values[0] as DBImage;
+								const data = values[0] as DBAsset;
 								if (data.file) {
 									const url = URL.createObjectURL(data.file);
 									IMAGES_CACHE.set(data.id, url);

@@ -10,7 +10,7 @@ export const TRANSFER_TEXT_NOTE_MAP: Record<
 > = {
 	mine: {
 		mine: {
-			awaiting: "你发起了一笔转账",
+			awaiting: "待朋友确认收钱",
 			accepted: "已被接受",
 			rejected: "已被退还",
 			expired: "已过期",
@@ -34,7 +34,7 @@ export const TRANSFER_TEXT_NOTE_MAP: Record<
 			expired: "该数据不合法，请重新检查！！",
 		},
 		friend: {
-			awaiting: "请收款",
+			awaiting: "待你确认收钱",
 			accepted: "已被接受",
 			rejected: "已被退还",
 			expired: "已过期",

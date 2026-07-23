@@ -1,6 +1,5 @@
 import path from "node:path";
-import react from '@vitejs/plugin-react'
-import { CodeInspectorPlugin } from "code-inspector-plugin";
+import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import svgr from "vite-plugin-svgr";
 
@@ -9,8 +8,10 @@ export default defineConfig({
 	plugins: [
 		react({ jsxImportSource: "@emotion/react" }),
 		svgr(),
-		CodeInspectorPlugin({ bundler: "vite" }),
 	],
+	server: {
+		port: 4444,
+	},
 	resolve: {
 		alias: {
 			"@": path.resolve(__dirname, "./src"),

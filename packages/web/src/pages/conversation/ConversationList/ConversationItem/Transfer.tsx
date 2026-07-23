@@ -4,7 +4,7 @@ import Previous2SVG from "@/assets/previous2-outlined.svg?react";
 import Transfer2SVG from "@/assets/transfer2-outlined.svg?react";
 import type { IConversationTypeTransfer } from "@/stateV2/conversation";
 import type { IStateProfile } from "@/stateV2/profile";
-import { get, isEmpty } from "lodash-es";
+import { get } from "lodash-es";
 import { type ComponentType, type SVGProps, memo } from "react";
 import { twJoin } from "tailwind-merge";
 import { TRANSFER_TEXT_NOTE_MAP } from "../consts";
@@ -41,21 +41,17 @@ const Transfer = ({
 }: Props) => {
 	const SVGComp = SVG_COMPONENT_MAP[transferStatus];
 	const getTransferNote = () => {
-		if (transferStatus === "awaiting") {
-			return isEmpty(note)
-				? get(TRANSFER_TEXT_NOTE_MAP, [originalSender, role, "awaiting"], "")
-				: note;
-		}
-		return get(TRANSFER_TEXT_NOTE_MAP, [originalSender, role, transferStatus], "");
+		const statusText = get(TRANSFER_TEXT_NOTE_MAP, [originalSender, role, transferStatus], "");
+		if (transferStatus === "awaiting") return statusText;
+		return note || statusText;
 	};
 
 	return (
 		<CommonBlock
 			upperText={upperText}
 			senderId={senderId}
-			blockClassName="w-4/5"
 			innerBlockClassName={twJoin(
-				"w-full pb-1",
+				"w-[242px] pb-1",
 				transferStatus === "awaiting" && "bg-wechatOrange-3 before:bg-wechatOrange-3",
 				(transferStatus === "accepted" || transferStatus === "rejected") &&
 					"bg-wechatOrange-5 before:bg-wechatOrange-5",
@@ -63,13 +59,13 @@ const Transfer = ({
 			)}
 		>
 			<div className="flex flex-col pl-1 text-white">
-				<div className="flex flex-1 items-center border-white/10 border-b pb-2">
+				<div className="flex flex-1 items-center pb-2">
 					<SVGComp fill="white" width={40} height={40} className="-ml-1 flex-shrink-0" />
-					<div className="ml-1 flex h-10 flex-col justify-between overflow-hidden">
-						<div className="font-medium">
-							¥<span className="ml-[1px]">{amount}</span>
+					<div className="ml-2 min-w-0 overflow-hidden text-left">
+						<div className="font-normal text-base leading-5">¥{amount}</div>
+						<div className="mt-1 line-clamp-1 font-normal text-xs leading-4">
+							{getTransferNote()}
 						</div>
-						<span className="line-clamp-1 font-light text-xs">{getTransferNote()}</span>
 					</div>
 				</div>
 				<span className="pt-1 font-light text-xs">微信转账</span>
