@@ -3,6 +3,7 @@ import "./index.css";
 import "animate.css";
 
 import "./i18n";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import { Provider } from "jotai";
 import React from "react";
 import ReactDOM from "react-dom/client";
@@ -21,6 +22,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 	<React.StrictMode>
 		<Provider store={mainStore}>
 			<RouterProvider router={router} />
+			<SpeedInsights />
 		</Provider>
 	</React.StrictMode>,
 );

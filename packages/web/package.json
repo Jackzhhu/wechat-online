@@ -13,6 +13,7 @@
 		"@faker-js/faker": "^8.4.1",
 		"@floating-ui/react": "^0.26.12",
 		"@microlink/react-json-view": "^1.23.1",
+		"@vercel/speed-insights": "^2.0.0",
 		"ahooks": "^3.8.0",
 		"animate.css": "^4.1.1",
 		"antd": "5.18.3",
