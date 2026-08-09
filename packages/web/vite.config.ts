@@ -21,7 +21,6 @@ export default defineConfig({
 		chunkSizeWarningLimit: 1024,
 		rollupOptions: {
 			output: {
-        preserveModulesLink: false, // 新增这一行，关闭软链接
 				manualChunks: {
 					react: ["react", "react-dom", "react-router-dom"],
 					antd: ["antd", "@ant-design/icons", "dayjs"],
