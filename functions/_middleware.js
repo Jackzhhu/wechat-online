@@ -1,4 +1,4 @@
-export async function onRequest({ request, env }) {
+export async function onRequest({ request, env, next }) {
   const authHeader = request.headers.get('authorization')
   const user = env.BASIC_USER
   const pass = env.BASIC_PASS
@@ -19,5 +19,5 @@ export async function onRequest({ request, env }) {
     return new Response('账号密码错误', { status: 401 })
   }
 
-  return await env.next(request)
+  return next();
 }
